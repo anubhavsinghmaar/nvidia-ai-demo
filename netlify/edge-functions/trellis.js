@@ -71,7 +71,7 @@ export default async (request) => {
         'NVCF-INPUT-ASSET-REFERENCES': assetId,
       },
       body: JSON.stringify({
-        image: `data:${contentType};asset_id,${assetId}`,
+        image: `data:${contentType};example_id,${assetId}`,
         slat_cfg_scale: slatCfg,
         ss_cfg_scale: ssCfg,
         slat_sampling_steps: steps,
