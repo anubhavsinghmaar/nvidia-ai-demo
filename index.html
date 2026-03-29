@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA AI Platform</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+</head>
+<body>
+
+  <!-- API Key Modal -->
+  <div id="apiModal" class="modal">
+    <div class="modal-content">
+      <h2>Configure API Key</h2>
+      <p>Enter your NVIDIA API key to get started. Your key is stored only in your browser session and never sent to any server other than NVIDIA's API.</p>
+      <div class="input-group">
+        <label for="apiKeyInput">NVIDIA API Key</label>
+        <input type="password" id="apiKeyInput" placeholder="nvapi-xxxx..." autocomplete="off">
+      </div>
+      <button id="saveApiKey" class="btn btn-primary">Save & Continue</button>
+      <p class="hint">Get your key at <a href="https://build.nvidia.com" target="_blank" rel="noopener">build.nvidia.com</a></p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <h1>NVIDIA AI Platform</h1>
+    </div>
+    <div class="header-right">
+      <select id="sectionSelect">
+        <option value="1">Section 1 &mdash; Image Generation (FLUX.2 Klein 4B)</option>
+        <option value="2">Section 2 &mdash; Code Generation (Multi-Model)</option>
+        <option value="3">Section 3 &mdash; Chart Detection (CACHED)</option>
+        <option value="4">Section 4 &mdash; 3D Generation (TRELLIS)</option>
+      </select>
+      <button id="apiConfigBtn" class="btn btn-icon" title="API Key Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Section 1: FLUX Image Generation -->
+    <section id="section1" class="section active">
+      <div class="section-header">
+        <h2>FLUX.2 Klein 4B</h2>
+        <p class="section-desc">Generate high-quality images from text descriptions. Fastest Black Forest Labs model with sub-second inference.</p>
+      </div>
+      <div class="controls-panel">
+        <div class="input-group full-width">
+          <label for="fluxPrompt">Prompt</label>
+          <textarea id="fluxPrompt" rows="3" placeholder="A macro wildlife photo of a green frog in a rainforest pond, highly detailed, eye-level shot"></textarea>
+        </div>
+        <div class="controls-row">
+          <div class="input-group">
+            <label for="fluxResolution">Resolution</label>
+            <select id="fluxResolution">
+              <option value="1024x1024" selected>1024 x 1024</option>
+              <option value="672x1568">672 x 1568</option>
+              <option value="688x1504">688 x 1504</option>
+              <option value="720x1456">720 x 1456</option>
+              <option value="752x1392">752 x 1392</option>
+              <option value="800x1328">800 x 1328</option>
+              <option value="832x1248">832 x 1248</option>
+              <option value="880x1184">880 x 1184</option>
+              <option value="944x1104">944 x 1104</option>
+              <option value="1104x944">1104 x 944</option>
+              <option value="1184x880">1184 x 880</option>
+              <option value="1248x832">1248 x 832</option>
+              <option value="1328x800">1328 x 800</option>
+              <option value="1392x752">1392 x 752</option>
+              <option value="1456x720">1456 x 720</option>
+              <option value="1504x688">1504 x 688</option>
+              <option value="1568x672">1568 x 672</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="fluxSteps">Steps: <span id="fluxStepsVal">4</span></label>
+            <input type="range" id="fluxSteps" min="1" max="10" value="4">
+          </div>
+          <div class="input-group">
+            <label for="fluxSeed">Seed</label>
+            <input type="number" id="fluxSeed" value="0" min="0">
+          </div>
+        </div>
+        <button id="fluxGenerate" class="btn btn-primary">Generate Image</button>
+      </div>
+      <div id="fluxResult" class="result-area">
+        <div class="placeholder">Your generated image will appear here</div>
+      </div>
+    </section>
+
+    <!-- Section 2: Code Generation Multi-Model -->
+    <section id="section2" class="section">
+      <div class="section-header">
+        <h2>Multi-Model Code Generation</h2>
+        <p class="section-desc">Send your coding prompt to 6 frontier AI models simultaneously. Compare outputs and download the best one.</p>
+      </div>
+      <div class="controls-panel">
+        <div class="input-group full-width">
+          <label for="codePrompt">Coding Prompt</label>
+          <textarea id="codePrompt" rows="4" placeholder="Write a Python function that implements binary search on a sorted array..."></textarea>
+        </div>
+        <button id="codeGenerate" class="btn btn-primary">Generate Code (All Models)</button>
+      </div>
+      <div id="codeResults" class="model-grid">
+        <div class="model-card" data-model="mistral">
+          <div class="model-card-header">
+            <span class="model-name">Mistral Small 4 (119B)</span>
+            <div class="model-actions">
+              <span class="model-status"></span>
+              <button class="btn btn-sm btn-copy" title="Copy">Copy</button>
+              <button class="btn btn-sm btn-download" title="Download">Download</button>
+            </div>
+          </div>
+          <pre class="model-output"><code></code></pre>
+        </div>
+        <div class="model-card" data-model="minimax">
+          <div class="model-card-header">
+            <span class="model-name">MiniMax M2.5 (230B)</span>
+            <div class="model-actions">
+              <span class="model-status"></span>
+              <button class="btn btn-sm btn-copy" title="Copy">Copy</button>
+              <button class="btn btn-sm btn-download" title="Download">Download</button>
+            </div>
+          </div>
+          <pre class="model-output"><code></code></pre>
+        </div>
+        <div class="model-card" data-model="qwen">
+          <div class="model-card-header">
+            <span class="model-name">Qwen 3.5 (397B)</span>
+            <div class="model-actions">
+              <span class="model-status"></span>
+              <button class="btn btn-sm btn-copy" title="Copy">Copy</button>
+              <button class="btn btn-sm btn-download" title="Download">Download</button>
+            </div>
+          </div>
+          <pre class="model-output"><code></code></pre>
+        </div>
+        <div class="model-card" data-model="glm">
+          <div class="model-card-header">
+            <span class="model-name">GLM-5 (744B)</span>
+            <div class="model-actions">
+              <span class="model-status"></span>
+              <button class="btn btn-sm btn-copy" title="Copy">Copy</button>
+              <button class="btn btn-sm btn-download" title="Download">Download</button>
+            </div>
+          </div>
+          <pre class="model-output"><code></code></pre>
+        </div>
+        <div class="model-card" data-model="kimi">
+          <div class="model-card-header">
+            <span class="model-name">Kimi K2.5 (1T)</span>
+            <div class="model-actions">
+              <span class="model-status"></span>
+              <button class="btn btn-sm btn-copy" title="Copy">Copy</button>
+              <button class="btn btn-sm btn-download" title="Download">Download</button>
+            </div>
+          </div>
+          <pre class="model-output"><code></code></pre>
+        </div>
+        <div class="model-card" data-model="deepseek">
+          <div class="model-card-header">
+            <span class="model-name">DeepSeek V3.2 (685B)</span>
+            <div class="model-actions">
+              <span class="model-status"></span>
+              <button class="btn btn-sm btn-copy" title="Copy">Copy</button>
+              <button class="btn btn-sm btn-download" title="Download">Download</button>
+            </div>
+          </div>
+          <pre class="model-output"><code></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: CACHED Chart Detection -->
+    <section id="section3" class="section">
+      <div class="section-header">
+        <h2>CACHED &mdash; Chart Element Detection</h2>
+        <p class="section-desc">Upload a chart image to detect and extract elements like titles, labels, legends, and data values using OCR.</p>
+      </div>
+      <div class="controls-panel">
+        <div class="input-group full-width">
+          <label for="cachedUpload">Upload Chart Image</label>
+          <div class="file-upload-area" id="cachedDropZone">
+            <input type="file" id="cachedUpload" accept="image/png,image/jpeg,image/jpg" hidden>
+            <p>Drag & drop an image or <span class="link">browse</span></p>
+            <p class="hint">PNG or JPEG, max 180KB base64</p>
+          </div>
+          <img id="cachedPreview" class="image-preview" hidden>
+        </div>
+        <button id="cachedAnalyze" class="btn btn-primary">Analyze Chart</button>
+      </div>
+      <div id="cachedResult" class="result-area">
+        <div class="placeholder">Detection results will appear here</div>
+      </div>
+    </section>
+
+    <!-- Section 4: TRELLIS 3D Generation -->
+    <section id="section4" class="section">
+      <div class="section-header">
+        <h2>TRELLIS &mdash; 3D Asset Generation</h2>
+        <p class="section-desc">Generate high-quality 3D assets (GLB) from images using Microsoft's TRELLIS model.</p>
+      </div>
+      <div class="controls-panel">
+        <div class="input-group full-width">
+          <label for="trellisUpload">Upload Reference Image</label>
+          <div class="file-upload-area" id="trellisDropZone">
+            <input type="file" id="trellisUpload" accept="image/png,image/jpeg,image/jpg" hidden>
+            <p>Drag & drop an image or <span class="link">browse</span></p>
+            <p class="hint">PNG or JPEG</p>
+          </div>
+          <img id="trellisPreview" class="image-preview" hidden>
+        </div>
+        <div class="controls-row">
+          <div class="input-group">
+            <label for="trellisCfg">SLAT CFG Scale</label>
+            <input type="number" id="trellisCfg" value="3" min="1" max="20" step="0.5">
+          </div>
+          <div class="input-group">
+            <label for="trellisSsCfg">SS CFG Scale</label>
+            <input type="number" id="trellisSsCfg" value="7.5" min="1" max="20" step="0.5">
+          </div>
+          <div class="input-group">
+            <label for="trellisSteps">Sampling Steps</label>
+            <input type="number" id="trellisSteps" value="25" min="1" max="50">
+          </div>
+          <div class="input-group">
+            <label for="trellisSeed">Seed</label>
+            <input type="number" id="trellisSeed" value="0" min="0">
+          </div>
+        </div>
+        <button id="trellisGenerate" class="btn btn-primary">Generate 3D</button>
+      </div>
+      <div id="trellisResult" class="result-area">
+        <div class="placeholder">Your 3D model will appear here</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
