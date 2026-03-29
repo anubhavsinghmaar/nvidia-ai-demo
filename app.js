@@ -182,14 +182,14 @@ async function generateFluxImage() {
   result.innerHTML = '<div class="placeholder"><span class="loader"></span><br>Generating image...</div>';
 
   try {
-    const response = await fetch('https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.2-klein-4b', {
+    const response = await fetch('/api/proxy', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + getKey('flux'),
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt, width, height, seed, steps })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: 'https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.2-klein-4b',
+        apiKey: getKey('flux'),
+        payload: { prompt, width, height, seed, steps }
+      })
     });
 
     if (!response.ok) {
@@ -327,14 +327,14 @@ async function streamCodingModel(model, prompt) {
   };
 
   try {
-    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+    const response = await fetch('/api/stream', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + apiKey,
-        'Content-Type': 'application/json',
-        'Accept': 'text/event-stream'
-      },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: 'https://integrate.api.nvidia.com/v1/chat/completions',
+        apiKey,
+        payload
+      })
     });
 
     if (!response.ok) {
@@ -416,20 +416,20 @@ async function analyzeChart() {
       throw new Error('Image too large. Please use an image under 180KB base64 (~135KB file size).');
     }
 
-    const response = await fetch('https://ai.api.nvidia.com/v1/cv/university-at-buffalo/cached', {
+    const response = await fetch('/api/proxy', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + getKey('cached'),
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        messages: [{
-          content: [{
-            type: 'image_url',
-            image_url: { url: dataUrl }
+        url: 'https://ai.api.nvidia.com/v1/cv/university-at-buffalo/cached',
+        apiKey: getKey('cached'),
+        payload: {
+          messages: [{
+            content: [{
+              type: 'image_url',
+              image_url: { url: dataUrl }
+            }]
           }]
-        }]
+        }
       })
     });
 
@@ -504,20 +504,20 @@ async function generateTrellis() {
   try {
     const dataUrl = await fileToBase64(input.files[0]);
 
-    const response = await fetch('https://ai.api.nvidia.com/v1/genai/microsoft/trellis', {
+    const response = await fetch('/api/proxy', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + getKey('trellis'),
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        image: dataUrl,
-        slat_cfg_scale: parseFloat(document.getElementById('trellisCfg').value),
-        ss_cfg_scale: parseFloat(document.getElementById('trellisSsCfg').value),
-        slat_sampling_steps: parseInt(document.getElementById('trellisSteps').value),
-        ss_sampling_steps: parseInt(document.getElementById('trellisSteps').value),
-        seed: parseInt(document.getElementById('trellisSeed').value)
+        url: 'https://ai.api.nvidia.com/v1/genai/microsoft/trellis',
+        apiKey: getKey('trellis'),
+        payload: {
+          image: dataUrl,
+          slat_cfg_scale: parseFloat(document.getElementById('trellisCfg').value),
+          ss_cfg_scale: parseFloat(document.getElementById('trellisSsCfg').value),
+          slat_sampling_steps: parseInt(document.getElementById('trellisSteps').value),
+          ss_sampling_steps: parseInt(document.getElementById('trellisSteps').value),
+          seed: parseInt(document.getElementById('trellisSeed').value)
+        }
       })
     });
 
