@@ -11,15 +11,70 @@
 
   <!-- API Key Modal -->
   <div id="apiModal" class="modal">
-    <div class="modal-content">
-      <h2>Configure API Key</h2>
-      <p>Enter your NVIDIA API key to get started. Your key is stored only in your browser session and never sent to any server other than NVIDIA's API.</p>
-      <div class="input-group">
-        <label for="apiKeyInput">NVIDIA API Key</label>
-        <input type="password" id="apiKeyInput" placeholder="nvapi-xxxx..." autocomplete="off">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>Configure API Keys</h2>
+        <p>Each model uses its own NVIDIA API key. Keys are stored only in your browser session — never in code or on any server.</p>
       </div>
-      <button id="saveApiKey" class="btn btn-primary">Save & Continue</button>
-      <p class="hint">Get your key at <a href="https://build.nvidia.com" target="_blank" rel="noopener">build.nvidia.com</a></p>
+
+      <div class="key-section">
+        <div class="key-section-title">Section 1 — Image Generation</div>
+        <div class="input-group">
+          <label for="key_flux">FLUX.2 Klein 4B</label>
+          <input type="password" id="key_flux" placeholder="nvapi-xxxx..." autocomplete="off">
+        </div>
+      </div>
+
+      <div class="key-section">
+        <div class="key-section-title">Section 2 — Code Generation</div>
+        <div class="keys-grid">
+          <div class="input-group">
+            <label for="key_mistral">Mistral Small 4 (119B)</label>
+            <input type="password" id="key_mistral" placeholder="nvapi-xxxx..." autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="key_minimax">MiniMax M2.5 (230B)</label>
+            <input type="password" id="key_minimax" placeholder="nvapi-xxxx..." autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="key_qwen">Qwen 3.5 (397B)</label>
+            <input type="password" id="key_qwen" placeholder="nvapi-xxxx..." autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="key_glm">GLM-5 (744B)</label>
+            <input type="password" id="key_glm" placeholder="nvapi-xxxx..." autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="key_kimi">Kimi K2.5 (1T)</label>
+            <input type="password" id="key_kimi" placeholder="nvapi-xxxx..." autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="key_deepseek">DeepSeek V3.2 (685B)</label>
+            <input type="password" id="key_deepseek" placeholder="nvapi-xxxx..." autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <div class="key-section">
+        <div class="key-section-title">Section 3 — Chart Detection</div>
+        <div class="input-group">
+          <label for="key_cached">CACHED (University at Buffalo)</label>
+          <input type="password" id="key_cached" placeholder="nvapi-xxxx..." autocomplete="off">
+        </div>
+      </div>
+
+      <div class="key-section">
+        <div class="key-section-title">Section 4 — 3D Generation</div>
+        <div class="input-group">
+          <label for="key_trellis">TRELLIS (Microsoft)</label>
+          <input type="password" id="key_trellis" placeholder="nvapi-xxxx..." autocomplete="off">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="saveApiKey" class="btn btn-primary">Save & Continue</button>
+        <p class="hint">Get keys at <a href="https://build.nvidia.com" target="_blank" rel="noopener">build.nvidia.com</a></p>
+      </div>
     </div>
   </div>
 

@@ -1,14 +1,22 @@
 // ─── API Key Management ───
-function getApiKey() {
-  return sessionStorage.getItem('nvidia_api_key') || '';
+const API_KEYS = {
+  flux:     'nvidia_key_flux',
+  mistral:  'nvidia_key_mistral',
+  minimax:  'nvidia_key_minimax',
+  qwen:     'nvidia_key_qwen',
+  glm:      'nvidia_key_glm',
+  kimi:     'nvidia_key_kimi',
+  deepseek: 'nvidia_key_deepseek',
+  cached:   'nvidia_key_cached',
+  trellis:  'nvidia_key_trellis',
+};
+
+function getKey(model) {
+  return sessionStorage.getItem(API_KEYS[model]) || '';
 }
 
-function setApiKey(key) {
-  sessionStorage.setItem('nvidia_api_key', key);
-}
-
-function requireApiKey() {
-  if (!getApiKey()) {
+function requireKey(model) {
+  if (!getKey(model)) {
     showApiModal();
     return false;
   }
@@ -17,27 +25,36 @@ function requireApiKey() {
 
 function showApiModal() {
   document.getElementById('apiModal').classList.add('active');
-  document.getElementById('apiKeyInput').value = getApiKey();
-  document.getElementById('apiKeyInput').focus();
+  // Populate existing saved keys
+  Object.entries(API_KEYS).forEach(([model, storageKey]) => {
+    const el = document.getElementById('key_' + model);
+    if (el) el.value = sessionStorage.getItem(storageKey) || '';
+  });
 }
 
 function hideApiModal() {
   document.getElementById('apiModal').classList.remove('active');
 }
 
+function hasAnyKey() {
+  return Object.values(API_KEYS).some(k => sessionStorage.getItem(k));
+}
+
 // ─── Init ───
 document.addEventListener('DOMContentLoaded', () => {
-  if (!getApiKey()) showApiModal();
+  if (!hasAnyKey()) showApiModal();
 
   document.getElementById('saveApiKey').addEventListener('click', () => {
-    const key = document.getElementById('apiKeyInput').value.trim();
-    if (!key) return;
-    setApiKey(key);
+    let saved = 0;
+    Object.keys(API_KEYS).forEach(model => {
+      const el = document.getElementById('key_' + model);
+      if (el && el.value.trim()) {
+        sessionStorage.setItem(API_KEYS[model], el.value.trim());
+        saved++;
+      }
+    });
+    if (!saved) { alert('Please enter at least one API key.'); return; }
     hideApiModal();
-  });
-
-  document.getElementById('apiKeyInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') document.getElementById('saveApiKey').click();
   });
 
   document.getElementById('apiConfigBtn').addEventListener('click', showApiModal);
@@ -149,7 +166,7 @@ function downloadBlob(blob, filename) {
 
 // ─── Section 1: FLUX Image Generation ───
 async function generateFluxImage() {
-  if (!requireApiKey()) return;
+  if (!requireKey('flux')) return;
 
   const btn = document.getElementById('fluxGenerate');
   const result = document.getElementById('fluxResult');
@@ -168,7 +185,7 @@ async function generateFluxImage() {
     const response = await fetch('https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.2-klein-4b', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + getApiKey(),
+        'Authorization': 'Bearer ' + getKey('flux'),
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
@@ -259,7 +276,9 @@ const CODING_MODELS = [
 ];
 
 async function generateCode() {
-  if (!requireApiKey()) return;
+  // Check at least one coding key is set
+  const hasCodeKey = ['mistral','minimax','qwen','glm','kimi','deepseek'].some(m => getKey(m));
+  if (!hasCodeKey) { showApiModal(); return; }
 
   const prompt = document.getElementById('codePrompt').value.trim();
   if (!prompt) { alert('Please enter a coding prompt'); return; }
@@ -288,6 +307,14 @@ async function streamCodingModel(model, prompt) {
   const codeEl = card.querySelector('code');
   const statusEl = card.querySelector('.model-status');
 
+  const apiKey = getKey(model.key);
+  if (!apiKey) {
+    statusEl.textContent = 'No key set';
+    statusEl.className = 'model-status error';
+    codeEl.textContent = 'No API key configured for this model. Click the ⚙ gear icon to add one.';
+    return;
+  }
+
   statusEl.textContent = 'Running...';
   statusEl.className = 'model-status running';
 
@@ -303,7 +330,7 @@ async function streamCodingModel(model, prompt) {
     const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + getApiKey(),
+        'Authorization': 'Bearer ' + apiKey,
         'Content-Type': 'application/json',
         'Accept': 'text/event-stream'
       },
@@ -369,7 +396,7 @@ async function streamCodingModel(model, prompt) {
 
 // ─── Section 3: CACHED Chart Detection ───
 async function analyzeChart() {
-  if (!requireApiKey()) return;
+  if (!requireKey('cached')) return;
 
   const input = document.getElementById('cachedUpload');
   if (!input.files || !input.files[0]) { alert('Please upload a chart image'); return; }
@@ -392,7 +419,7 @@ async function analyzeChart() {
     const response = await fetch('https://ai.api.nvidia.com/v1/cv/university-at-buffalo/cached', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + getApiKey(),
+        'Authorization': 'Bearer ' + getKey('cached'),
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
@@ -462,7 +489,7 @@ function renderCachedResults(data, container) {
 
 // ─── Section 4: TRELLIS 3D Generation ───
 async function generateTrellis() {
-  if (!requireApiKey()) return;
+  if (!requireKey('trellis')) return;
 
   const input = document.getElementById('trellisUpload');
   if (!input.files || !input.files[0]) { alert('Please upload a reference image'); return; }
@@ -480,7 +507,7 @@ async function generateTrellis() {
     const response = await fetch('https://ai.api.nvidia.com/v1/genai/microsoft/trellis', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + getApiKey(),
+        'Authorization': 'Bearer ' + getKey('trellis'),
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
