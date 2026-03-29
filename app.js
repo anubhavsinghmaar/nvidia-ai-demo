@@ -502,22 +502,22 @@ async function generateTrellis() {
   result.innerHTML = '<div class="placeholder"><span class="loader"></span><br>Generating 3D model... This may take a while.</div>';
 
   try {
+    // TRELLIS requires NVIDIA asset upload first — handled in /api/trellis edge function
     const dataUrl = await fileToBase64(input.files[0]);
+    const base64Part = dataUrl.split(',')[1];
+    const imageType = input.files[0].type || 'image/png';
 
-    const response = await fetch('/api/proxy', {
+    const response = await fetch('/api/trellis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        url: 'https://ai.api.nvidia.com/v1/genai/microsoft/trellis',
         apiKey: getKey('trellis'),
-        payload: {
-          image: dataUrl,
-          slat_cfg_scale: parseFloat(document.getElementById('trellisCfg').value),
-          ss_cfg_scale: parseFloat(document.getElementById('trellisSsCfg').value),
-          slat_sampling_steps: parseInt(document.getElementById('trellisSteps').value),
-          ss_sampling_steps: parseInt(document.getElementById('trellisSteps').value),
-          seed: parseInt(document.getElementById('trellisSeed').value)
-        }
+        imageBase64: base64Part,
+        imageType,
+        slatCfg: parseFloat(document.getElementById('trellisCfg').value),
+        ssCfg: parseFloat(document.getElementById('trellisSsCfg').value),
+        steps: parseInt(document.getElementById('trellisSteps').value),
+        seed: parseInt(document.getElementById('trellisSeed').value)
       })
     });
 

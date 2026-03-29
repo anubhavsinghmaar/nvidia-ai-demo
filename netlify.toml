@@ -5,3 +5,7 @@
 [[edge_functions]]
   path = "/api/stream"
   function = "stream"
+
+[[edge_functions]]
+  path = "/api/trellis"
+  function = "trellis"
